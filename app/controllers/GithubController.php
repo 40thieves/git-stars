@@ -26,14 +26,14 @@ class GithubController extends BaseController {
 
 		foreach($users as $user)
 		{
-			// Uses Requests library to make http request
+			// Uses Requests library to make http request for user data
 			$user_response = Requests::get($github_url . $user);
 			$user_json = json_decode($user_response->body);
 
 			// Updates user model
 			$user_model = User::createIfDoesNotExist($user_json->login);
 
-			// Uses Requests library to make http request
+			// Uses Requests library to make http request for user's starred data
 			$stars_response = Requests::get($github_url . $user . '/starred');
 			$stars_json = json_decode($stars_response->body);
 
