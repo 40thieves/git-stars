@@ -20,7 +20,7 @@ To populate the DB, navigate to `/github/update`. This will fetch data from the 
 
 #### To-dos
 
-* [] Github API pagination
-* [] Understand what the fuck is going on with recommender algorithms
-* [] Serve data from an endpoint
-* [] Profit?
+* [ ] Github API pagination
+* [ ] Understand what the fuck is going on with recommender algorithms
+* [ ] Serve data from an endpoint
+* [ ] Profit?
