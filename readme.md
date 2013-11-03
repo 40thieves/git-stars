@@ -11,7 +11,7 @@ Recommender system for Github repos, build on Laravel, for Portsmouth University
 #### Installation
 
 * Clone down: `git clone git@github.com:40thieves/git-stars.git`
-* Create `git-stars` table
+* Create `git-stars` database
 * Run `php artisan migrate`
 
 #### Usage
