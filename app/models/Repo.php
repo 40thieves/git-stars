@@ -25,4 +25,21 @@ class Repo extends Eloquent {
 		'id',
 	];
 
+	public static function createIfDoesNotExist($name, $options = [])
+	{
+		// Queries to find existing repo with name
+		$repo = self::where('name', '=', $name)->first();
+
+		// If not found, create
+		if ( ! $repo)
+		{
+			$repo = self::create([
+				'name'     => $name,
+				'language' => isset($options['language']) ? $options['language'] : null,
+			]);
+		}
+
+		return $repo;
+	}
+
 }
