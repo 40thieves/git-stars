@@ -25,7 +25,13 @@ class Repo extends Eloquent {
 		'id',
 	];
 
-	public static function createIfDoesNotExist($name, $options = [])
+	/**
+	 * Creates model, if model does not already exist
+	 * @param  string $name   Repo name to create model with
+	 * @param  array  $params Params to create model with
+	 * @return Model          Model found to created
+	 */
+	public static function createIfDoesNotExist($name, $params = [])
 	{
 		// Queries to find existing repo with name
 		$repo = self::where('name', '=', $name)->first();
@@ -35,7 +41,7 @@ class Repo extends Eloquent {
 		{
 			$repo = self::create([
 				'name'     => $name,
-				'language' => isset($options['language']) ? $options['language'] : null,
+				'language' => isset($params['language']) ? $params['language'] : null,
 			]);
 		}
 
