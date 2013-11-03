@@ -13,6 +13,8 @@ class GithubController extends BaseController {
 
 	public function update()
 	{
+		$github_url = 'https://api.github.com/users/';
+
 		// $users = [
 		// 	'40thieves',
 		// 	'edpoole',
@@ -21,14 +23,14 @@ class GithubController extends BaseController {
 		// ];
 
 		// Uses Requests library to make http request
-		$user_response = Requests::get('https://api.github.com/users/40thieves');
+		$user_response = Requests::get($github_url . '40thieves');
 		$user_json = json_decode($user_response->body);
 
 		// Updates user model
 		$user = User::createIfDoesNotExist($user_json->login);
 
 		// Uses Requests library to make http request
-		$stars_response = Requests::get('https://api.github.com/users/40thieves/starred');
+		$stars_response = Requests::get($github_url . '40thieves/starred');
 		$stars_json = json_decode($stars_response->body);
 
 		foreach($stars_json as $star)
