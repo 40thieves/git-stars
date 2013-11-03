@@ -1,19 +1,20 @@
 <?php
 
-class User extends Eloquent {
+class Repo extends Eloquent {
 
 	/**
 	 * The database table used by the model
 	 * @var string
 	 */
-	protected $table = 'users';
+	protected $table = 'repos';
 
 	/**
 	 * Model attributes that can be mass-assigned
 	 * @var array
 	 */
 	protected $fillable = [
-		'username',
+		'name',
+		'language',
 	];
 
 	/**
@@ -23,6 +24,5 @@ class User extends Eloquent {
 	protected $guarded = [
 		'id',
 	];
-
 
 }
