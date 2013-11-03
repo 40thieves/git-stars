@@ -1,21 +1,26 @@
-## Laravel PHP Framework
+## Git Stars
 
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/version.png)](https://packagist.org/packages/laravel/framework) [![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.png)](https://packagist.org/packages/laravel/framework) [![Build Status](https://travis-ci.org/laravel/framework.png)](https://travis-ci.org/laravel/framework)
+### Github Repo Recommender System
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, and caching.
+Recommender system for Github repos, build on Laravel, for Portsmouth University Web Research unit
 
-Laravel aims to make the development process a pleasing one for the developer without sacrificing application functionality. Happy developers make the best code. To this end, we've attempted to combine the very best of what we have seen in other web frameworks, including frameworks implemented in other languages, such as Ruby on Rails, ASP.NET MVC, and Sinatra.
+#### Requirements
 
-Laravel is accessible, yet powerful, providing powerful tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+* [Composer](http://getcomposer.org)
 
-## Official Documentation
+#### Installation
 
-Documentation for the entire framework can be found on the [Laravel website](http://laravel.com/docs).
+* Clone down: `git clone git@github.com:40thieves/git-stars.git`
+* Create `git-stars` table
+* Run `php artisan migrate`
 
-### Contributing To Laravel
+#### Usage
 
-**All issues and pull requests should be filed on the [laravel/framework](http://github.com/laravel/framework) repository.**
+To populate the DB, navigate to `/github/update`. This will fetch data from the Github API.
 
-### License
+#### To-dos
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+* [] Github API pagination
+* [] Understand what the fuck is going on with recommender algorithms
+* [] Serve data from an endpoint
+* [] Profit?
