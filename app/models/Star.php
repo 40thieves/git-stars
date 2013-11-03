@@ -31,4 +31,32 @@ class Star extends Eloquent {
 		'id',
 	];
 
+	public static function createIfDoesNotExist($params)
+	{
+		if ( ! isset($params['user_id']))
+			App::abort(500, 'User ID not set');
+
+		if ( ! isset($params['repo_id']))
+			App::abort(500, 'Repo ID not set');
+
+		$user_id = $params['user_id'];
+		$repo_id = $params['repo_id'];
+
+		// Queries to find existing star with same user_id and repo_id
+		$star = self::where('user_id', '=', $user_id)
+			->where('repo_id', '=', $repo_id)
+			->first();
+
+		// If not found, create
+		if ( ! $star)
+		{
+			$star = self::create([
+				'user_id' => $user_id,
+				'repo_id' => $repo_id,
+			]);
+		}
+
+		return $star;
+	}
+
 }

@@ -34,6 +34,8 @@ class GithubController extends BaseController {
 		foreach($stars_json as $star)
 		{
 			$repo = Repo::createIfDoesNotExist($star->name, ['language' => $star->language]);
+
+			$foo = Star::createIfDoesNotExist(['user_id' => $user->id, 'repo_id' => $repo->id]);
 		}
 	}
 
