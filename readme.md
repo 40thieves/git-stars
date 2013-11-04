@@ -13,6 +13,7 @@ Recommender system for Github repos, build on Laravel, for Portsmouth University
 * Clone down: `git clone git@github.com:40thieves/git-stars.git`
 * Create `git-stars` database
 * Run `php artisan migrate`
+* `chmod -R 777 app/storage`
 
 #### Usage
 
