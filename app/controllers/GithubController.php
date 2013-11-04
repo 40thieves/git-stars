@@ -43,7 +43,7 @@ class GithubController extends BaseController {
 				$repo_model = Repo::createIfDoesNotExist($star->name, ['language' => $star->language]);
 
 				// Updates star model
-				$star_model = Star::createIfDoesNotExist(['user_id' => $user_model->id, 'repo_id' => $repo->id]);
+				$star_model = Star::createIfDoesNotExist(['user_id' => $user_model->id, 'repo_id' => $repo_model->id]);
 			}
 		}
 	}
