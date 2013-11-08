@@ -17,12 +17,7 @@ class GithubController extends BaseController {
 		$github_url = 'https://api.github.com/users/';
 
 		// List of users to index
-		$users = [
-			'40thieves',
-			'edpoole',
-			'rmlewisuk',
-			'danharper',
-		];
+		$users = Config::get('recommender.users');
 
 		foreach($users as $user)
 		{
@@ -31,7 +26,12 @@ class GithubController extends BaseController {
 			$user_json = json_decode($user_response->body);
 
 			// Updates user model
-			$user_model = User::createIfDoesNotExist($user_json->login);
+			$user_model = User::createIfDoesNotExist(
+				$user_json->login,
+				[
+					'url' => $user_json->html_url
+				]
+			);
 
 			// Uses Requests library to make http request for user's starred data
 			$stars_response = Requests::get($github_url . $user . '/starred');
@@ -40,10 +40,21 @@ class GithubController extends BaseController {
 			foreach($stars_json as $star)
 			{
 				// Updates repo model
-				$repo_model = Repo::createIfDoesNotExist($star->name, ['language' => $star->language]);
+				$repo_model = Repo::createIfDoesNotExist(
+					$star->name,
+					[
+						'language' => $star->language,
+						'url' => $star->html_url
+					]
+				);
 
 				// Updates star model
-				$star_model = Star::createIfDoesNotExist(['user_id' => $user_model->id, 'repo_id' => $repo_model->id]);
+				$star_model = Star::createIfDoesNotExist(
+					[
+						'user_id' => $user_model->id,
+						'repo_id' => $repo_model->id
+					]
+				);
 			}
 		}
 	}
