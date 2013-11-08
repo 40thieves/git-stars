@@ -40,10 +40,21 @@ class GithubController extends BaseController {
 			foreach($stars_json as $star)
 			{
 				// Updates repo model
-				$repo_model = Repo::createIfDoesNotExist($star->name, ['language' => $star->language]);
+				$repo_model = Repo::createIfDoesNotExist(
+					$star->name,
+					[
+						'language' => $star->language,
+						'url' => $star->html_url
+					]
+				);
 
 				// Updates star model
-				$star_model = Star::createIfDoesNotExist(['user_id' => $user_model->id, 'repo_id' => $repo_model->id]);
+				$star_model = Star::createIfDoesNotExist(
+					[
+						'user_id' => $user_model->id,
+						'repo_id' => $repo_model->id
+					]
+				);
 			}
 		}
 	}

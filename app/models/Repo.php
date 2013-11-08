@@ -15,6 +15,7 @@ class Repo extends Eloquent {
 	protected $fillable = [
 		'name',
 		'language',
+		'url',
 	];
 
 	/**
@@ -81,6 +82,7 @@ class Repo extends Eloquent {
 			$repo = self::create([
 				'name'     => $name,
 				'language' => isset($params['language']) ? $params['language'] : null,
+				'url'      => isset($params['url']) ? $params['url'] : null,
 			]);
 		}
 
