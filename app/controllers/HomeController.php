@@ -34,7 +34,9 @@ class HomeController extends BaseController {
 		// Gets repo ids of top 5 recommendations
 		$similarityIndex = array_keys(array_slice($similarityIndex, 0, 5, true));
 
-		$top5 = $allRepos->filter(function($repo) use ($similarityIndex) {
+		// Filter allRepos to get top 5 repos
+		$top5 = $allRepos->filter(function($repo) use ($similarityIndex)
+		{
 			if (array_search($repo->id, $similarityIndex) !== false)
 				return $repo;
 		});
