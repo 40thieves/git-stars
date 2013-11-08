@@ -26,13 +26,22 @@ class HomeController extends BaseController {
 			// Calculate magnitude for other repo
 			$repoMagnitude = $this->magnitude($repoMatrix);
 
-			$similarityIndex[$repoKey] = $this->similarity($selectedRepoMatrix, $repoMatrix, $selectedRepoMagnitude, $repoMagnitude);
+			$similarityIndex[$repo->id] = $this->similarity($selectedRepoMatrix, $repoMatrix, $selectedRepoMagnitude, $repoMagnitude);
 		}
 
 		// Sort high to low
 		arsort($similarityIndex);
+		// Gets repo ids of top 5 recommendations
+		$similarityIndex = array_keys(array_slice($similarityIndex, 0, 5, true));
 
-		Log::debug(print_r($similarityIndex, true));
+		// Filter allRepos to get top 5 repos
+		$top5 = $allRepos->filter(function($repo) use ($similarityIndex)
+		{
+			if (array_search($repo->id, $similarityIndex) !== false)
+				return $repo;
+		});
+
+		return $top5->toJson();
 	}
 
 	/**
