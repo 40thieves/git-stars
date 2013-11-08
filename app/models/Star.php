@@ -31,6 +31,25 @@ class Star extends Eloquent {
 		'id',
 	];
 
+	public static function getAllByRepoId($repoId)
+	{
+		return self::where('repo_id', '=', $repoId)->get();
+	}
+
+	public static function generateMatrixByRepoId($repoId)
+	{
+		$stars = self::getAllByRepoId($repoId);
+
+		$matrix = Config::get('recommender.blankMatrix'); // Blank matrix
+
+		foreach($stars as $star)
+		{
+			$matrix[$star->user_id - 1] = 1;
+		}
+
+		return $matrix;
+	}
+
 	public static function createIfDoesNotExist($params)
 	{
 		if ( ! isset($params['user_id']))

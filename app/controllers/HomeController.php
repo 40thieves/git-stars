@@ -15,7 +15,8 @@ class HomeController extends BaseController {
 	{
 		$repo = Repo::getFirstByName($repoName);
 
-		$repoStars = Star::getAllByRepoId($repo->id);
+		// $repoStars = Star::countAllByRepoId($repo->id);
+		$repoMatrix = Star::generateMatrixByRepoId($repo->id);
 	}
 
 }
