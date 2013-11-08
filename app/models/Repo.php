@@ -26,6 +26,19 @@ class Repo extends Eloquent {
 	];
 
 	/**
+	 * Queries model to find the first repo with name (should be unique)
+	 * @param  string $name Repo name
+	 * @return Model        Repo model found
+	 */
+	public static function getFirstByName($name)
+	{
+		if ( ! $name)
+			App::abort(500, 'No name given');
+
+		return self::where('name', '=', $name)->first();
+	}
+
+	/**
 	 * Creates model, if model does not already exist
 	 * @param  string $name   Repo name to create model with
 	 * @param  array  $params Params to create model with
@@ -33,8 +46,7 @@ class Repo extends Eloquent {
 	 */
 	public static function createIfDoesNotExist($name, $params = [])
 	{
-		// Queries to find existing repo with name
-		$repo = self::where('name', '=', $name)->first();
+		$repo = self::getFirstByName($name);
 
 		// If not found, create
 		if ( ! $repo)
