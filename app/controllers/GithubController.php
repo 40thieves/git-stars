@@ -31,7 +31,12 @@ class GithubController extends BaseController {
 			$user_json = json_decode($user_response->body);
 
 			// Updates user model
-			$user_model = User::createIfDoesNotExist($user_json->login);
+			$user_model = User::createIfDoesNotExist(
+				$user_json->login,
+				[
+					'url' => $user_json->html_url
+				]
+			);
 
 			// Uses Requests library to make http request for user's starred data
 			$stars_response = Requests::get($github_url . $user . '/starred');
