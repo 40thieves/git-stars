@@ -13,10 +13,9 @@ class HomeController extends BaseController {
 
 	public function recommend($repoName)
 	{
-		$item = Repo::getFirstByName($repoName);
-		$items = Repo::getAllExceptId($item->id);
+		$repo = Repo::getFirstByName($repoName);
 
-		
+		$repoStars = Star::getAllByRepoId($repo->id);
 	}
 
 }

@@ -38,14 +38,6 @@ class Repo extends Eloquent {
 		return self::where('name', '=', $name)->first();
 	}
 
-	public static function getAllExceptId($id)
-	{
-		if ( ! $id)
-			App::abort(500, 'No id given');
-
-		return self::where('id', '!=', $id)->get();
-	}
-
 	/**
 	 * Creates model, if model does not already exist
 	 * @param  string $name   Repo name to create model with
