@@ -13,9 +13,8 @@ class HomeController extends BaseController {
 
 	public function recommend($repoName)
 	{
-		$repo = Repo::getFirstByName($repoName);
+		list($repo, $allRepos) = Repo::getAllWithSelectedByName($repoName);
 
-		// $repoStars = Star::countAllByRepoId($repo->id);
 		$repoMatrix = Star::generateMatrixByRepoId($repo->id);
 	}
 

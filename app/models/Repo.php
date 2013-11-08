@@ -26,6 +26,33 @@ class Repo extends Eloquent {
 	];
 
 	/**
+	 * Gets all repos, but separates the selected repo in the return array
+	 * @param  string $name Repo name to select
+	 * @return array        Array containing selected repo first, then collection of all other repos
+	 */
+	public static function getAllWithSelectedByName($name)
+	{
+		$all = self::getAll();
+
+		$selected = $all->filter(function($one) use ($name) {
+			if ($one->name == $name)
+				return true;
+		});
+
+		$all = $all->filter(function($one) use ($name) {
+			if ($one->name != $name)
+				return true;
+		});
+
+		return [$selected, $all];
+	}
+
+	public static function getAll()
+	{
+		return self::all();
+	}
+
+	/**
 	 * Queries model to find the first repo with name (should be unique)
 	 * @param  string $name Repo name
 	 * @return Model        Repo model found
