@@ -44,7 +44,7 @@ class Repo extends Eloquent {
 				return true;
 		});
 
-		return [$selected, $all];
+		return [$selected->first(), $all];
 	}
 
 	public static function getAll()

@@ -7,8 +7,6 @@ class HomeController extends BaseController {
 	| Default Home Controller
 	|--------------------------------------------------------------------------
 	|
-	| 
-	|
 	*/
 
 	public function recommend($repoName)
