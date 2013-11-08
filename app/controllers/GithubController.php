@@ -17,12 +17,7 @@ class GithubController extends BaseController {
 		$github_url = 'https://api.github.com/users/';
 
 		// List of users to index
-		$users = [
-			'40thieves',
-			'edpoole',
-			'rmlewisuk',
-			'danharper',
-		];
+		$users = Config::get('recommender.users');
 
 		foreach($users as $user)
 		{
