@@ -28,6 +28,22 @@
 	<div class="welcome">
 		<h1>Hello World</h1>
 		<p>Welcome to git-stars, a Github repo recommender</p>
+
+		<form id="repo" method="/recommend">
+			<label for="repo-name">Enter a repo name: </label>
+			<input type="text" id="repo-name" name="repo-name" placeholder="laravel" autofocus>
+		</form>
+
+		<script>
+		var form = document.querySelector('form');
+
+		if (form) {
+			form.addEventListener('submit', function(e) {
+				e.preventDefault();
+				window.location = 'recommend/' + e.target[0].value;
+			});
+		}
+		</script>
 	</div>
 </body>
 </html>
