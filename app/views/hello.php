@@ -29,7 +29,7 @@
 		<h1>Hello World</h1>
 		<p>Welcome to git-stars, a Github repo recommender</p>
 
-		<form id="repo" method="/recommend">
+		<form id="repo" action="/recommend" method="get">
 			<label for="repo-name">Enter a repo name: </label>
 			<input type="text" id="repo-name" name="repo-name" placeholder="laravel" autofocus>
 		</form>
