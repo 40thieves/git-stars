@@ -11,6 +11,45 @@ class GithubController extends BaseController {
 	|
 	*/
 
+	private $github;
+
+	public function logInWithGithub()
+	{
+		// Get data from input
+		$code = Input::get('code');
+
+		// Get github service
+		$this->github = OAuth::consumer('Github', 'http://gitstars.dev/github');
+
+		// If code is provided get user data and sign in
+		if ( ! empty($code))
+		{
+			// Get callback token
+			$this->github->requestAccessToken($code);
+
+			$this->foo();
+		}
+		else
+		{
+			// Get guthub authorisation
+			$url = $this->github->getAuthorizationUri();
+
+			// Return to github login url
+			return Response::make()->header('Location', (string) $url);
+		}
+	}
+
+	public function foo()
+	{
+		if ( ! $this->github)
+		{
+			return Redirect::to('github');
+		}
+
+		$result = $this->github->request('/user');
+		print_r($result);
+	}
+
 	public function update()
 	{
 		// Base github url
