@@ -22,6 +22,6 @@ Route::get('recommend/{repoName}', 'RecommendController@recommend');
 
 Route::get('github/update', 'GithubController@update');
 
-App::error(function(Exception $exception) {
-	return View::make('error');
-});
+// App::error(function(Exception $exception) {
+// 	return View::make('error');
+// });
