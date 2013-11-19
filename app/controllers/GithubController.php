@@ -12,11 +12,9 @@ class GithubController extends BaseController {
 	*/
 
 	/**
-	 * Github OAuth instance
-	 * @var object
+	 * Uses OAuth to login with github. Bascially rips off artdarek's oauth-4-laravel examples
+	 * https://github.com/artdarek/oauth-4-laravel
 	 */
-	private $github;
-
 	public function logInWithGithub()
 	{
 		// Get data from input
@@ -47,6 +45,10 @@ class GithubController extends BaseController {
 		}
 	}
 
+	/**
+	 * Updates database with data from api. Currently uses specific repos as the base to fetch list of users,
+	 * and then each user's starred data
+	 */
 	public function update()
 	{
 		// Gets oauth access token
@@ -97,6 +99,11 @@ class GithubController extends BaseController {
 		return Redirect::to('/');
 	}
 
+	/**
+	 * Fetches data from the url, checking for and following pagination links
+	 * @param  string $url Url to fetch data from
+	 * @return array       Complete array of data returned
+	 */
 	private function recursiveFetch($url)
 	{
 		$ret = [];
