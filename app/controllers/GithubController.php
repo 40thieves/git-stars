@@ -12,11 +12,9 @@ class GithubController extends BaseController {
 	*/
 
 	/**
-	 * Github OAuth instance
-	 * @var object
+	 * Uses OAuth to login with github. Bascially rips off artdarek's oauth-4-laravel examples
+	 * https://github.com/artdarek/oauth-4-laravel
 	 */
-	private $github;
-
 	public function logInWithGithub()
 	{
 		// Get data from input
@@ -47,73 +45,96 @@ class GithubController extends BaseController {
 		}
 	}
 
+	/**
+	 * Updates database with data from api. Currently uses specific repos as the base to fetch list of users,
+	 * and then each user's starred data
+	 */
 	public function update()
 	{
 		// Gets oauth access token
 		if ( ! $token = Session::get('token'))
 			return Redirect::to('github')->with('redirect', 'github/update');
 
-		$githubUrl = Config::get('github.urls.users'); // Base github url
-		$tokenUrlFragment = '?access_token=' . $token; // Token url fragment
+		$reposGithubUrl = Config::get('github.urls.repos');
+		$usersGithubUrl = Config::get('github.urls.users');
+		$tokenUrlFragment = '?access_token=' . $token;
 
-		// List of users to index
-		$users = Config::get('recommender.users');
+		// Sets url for users data - using sample repos Casper (117 stars) or var_dumpling (17 stars)
+		$baseRepo = Config::get('github.baseRepos.lowStars');
+		// $baseRepo = Config::get('github.baseRepos.highStars');
+		$url = $reposGithubUrl . $baseRepo . '/stargazers' . $tokenUrlFragment;
 
-		foreach($users as $user)
+		// Fetch users
+		$users = $this->recursiveFetch($url);
+
+		// Loops through all users to fetch and star their starred data
+		foreach ($users as $user)
 		{
-			// Uses Requests library to make http request for user data
-			$userResponse = Requests::get($githubUrl . $user . $tokenUrlFragment);
-			$userJson = json_decode($userResponse->body);
-
-			// Updates user model
+			// Creates user model
 			$userModel = User::createIfDoesNotExist(
-				$userJson->login,
-				[
-					'url' => $userJson->html_url
-				]
+				$user->login,
+				['url' => $user->html_url]
 			);
 
-			// Uses Requests library to make http request for user's starred data
-			$starsResponse = Requests::get($githubUrl . $user . '/starred' . $tokenUrlFragment);
-			$starJson = json_decode($starsResponse->body);
+			// Request for user's starred data
+			$starsUrl = $usersGithubUrl . $user->login . '/starred' . $tokenUrlFragment;
+			$stars = $this->recursiveFetch($starsUrl);
 
-			foreach($starJson as $star)
+			foreach ($stars as $star)
 			{
-				// Updates repo model
+				// Creates repo model
 				$repoModel = Repo::createIfDoesNotExist(
 					$star->name,
-					[
-						'language' => $star->language,
-						'url' => $star->html_url
-					]
+					['url' => $star->html_url]
 				);
 
-				// Updates star model
-				$starModel = Star::createIfDoesNotExist(
-					[
-						'user_id' => $userModel->id,
-						'repo_id' => $repoModel->id
-					]
-				);
+				// Creates star model
+				$starModel = Star::createIfDoesNotExist([
+					'user_id' => $userModel->id,
+					'repo_id' => $repoModel->id,
+				]);
 			}
 		}
 
 		return Redirect::to('/');
 	}
 
-	public function foo()
+	/**
+	 * Fetches data from the url, checking for and following pagination links
+	 * @param  string $url Url to fetch data from
+	 * @return array       Complete array of data returned
+	 */
+	private function recursiveFetch($url)
 	{
-		// Gets oauth access token
-		if ( ! $token = Session::get('token'))
-			return Redirect::to('github')->with('redirect', 'github/foo');
+		$ret = [];
+		$i = 1;
+		do {
+			// Add page numbers past page 1
+			if ($i > 1)
+				$url = $url . "&page=$i";
 
-		$githubUrl = Config::get('github.urls.repos');
-		$tokenUrlFragment = '?access_token=' . $token;
+			// Make request
+			$response = Requests::get($url);
 
-		$userResponse = Requests::get($githubUrl . 'TryGhost/Casper/stargazers' . $tokenUrlFragment);
-		$userJson = json_decode($userResponse->body);
+			// Get response headers
+			$header = $response->headers['link'];
 
-		return $userJson;
+			if ($response->status_code == 200)
+			{
+				// Decode response body
+				$json = json_decode($response->body);
+
+				if ( ! is_array($json))
+					App::abort(500, 'JSON not an array');
+				// Join with previous responses
+				$ret = array_merge($ret, $json);
+			}
+
+			$i++;
+		// If last page link is included in header, continue to fetch next page
+		} while (preg_match('/rel="last"/', $header) === 1);
+
+		return $ret;
 	}
 
 }

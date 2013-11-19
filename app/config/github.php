@@ -7,4 +7,9 @@ return array(
 		'repos' => 'https://api.github.com/repos/',
 	],
 
+	'baseRepos' => [
+		'lowStars'  => 'alexnaspo/var_dumpling',
+		'highStars' => 'TryGhost/Casper',
+	]
+
 );

@@ -40,7 +40,7 @@ class Star extends Eloquent {
 	{
 		$stars = self::getAllByRepoId($repoId);
 
-		$matrix = Config::get('recommender.blankMatrix'); // Blank matrix
+		$matrix = User::generateBlankMatrix(); // Blank matrix
 
 		foreach($stars as $star)
 		{

@@ -33,6 +33,19 @@ class User extends Eloquent {
 		return self::where('username', '=', $username)->first();
 	}
 
+	public static function generateBlankMatrix()
+	{
+		$count = self::all()->count();
+
+		$mat = [];
+		for ($i = 0; $i < $count; $i++)
+		{
+			$mat[] = 0;
+		}
+
+		return $mat;
+	}
+
 	/**
 	 * Creates model, if model with username does not already exist
 	 * @param  string $username Username to create model with
