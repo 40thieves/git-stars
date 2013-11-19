@@ -50,7 +50,7 @@ class GithubController extends BaseController {
 			return Redirect::to('github');
 
 		// Base github url
-		$githubUrl = 'https://api.github.com/users/';
+		$githubUrl = Config::get('github.url');
 		$tokenUrlFragment = '?access_token=' . $token;
 
 		// List of users to index
