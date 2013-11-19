@@ -2,6 +2,9 @@
 
 return array(
 
-	'url' => 'https://api.github.com/users/',
+	'urls' => [
+		'users' => 'https://api.github.com/users/',
+		'repos' => 'https://api.github.com/repos/',
+	],
 
 );

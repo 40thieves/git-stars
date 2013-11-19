@@ -32,7 +32,10 @@ class GithubController extends BaseController {
 			$token = $this->github->requestAccessToken($code)->getAccessToken();
 
 			// Redirect to update function, with access token
-			return Redirect::to('github/update')->with('token', $token);
+			if ($redirect = Session::get('redirect'))
+				return Redirect::to($redirect)->with('token', $token);
+			else
+				return Redirect::to('github/update')->with('token', $token);
 		}
 		else
 		{
@@ -48,9 +51,9 @@ class GithubController extends BaseController {
 	{
 		// Gets oauth access token
 		if ( ! $token = Session::get('token'))
-			return Redirect::to('github');
+			return Redirect::to('github')->with('redirect', 'github/update');
 
-		$githubUrl = Config::get('github.url'); // Base github url
+		$githubUrl = Config::get('github.urls.users'); // Base github url
 		$tokenUrlFragment = '?access_token=' . $token; // Token url fragment
 
 		// List of users to index
@@ -96,6 +99,21 @@ class GithubController extends BaseController {
 		}
 
 		return Redirect::to('/');
+	}
+
+	public function foo()
+	{
+		// Gets oauth access token
+		if ( ! $token = Session::get('token'))
+			return Redirect::to('github')->with('redirect', 'github/foo');
+
+		$githubUrl = Config::get('github.urls.repos');
+		$tokenUrlFragment = '?access_token=' . $token;
+
+		$userResponse = Requests::get($githubUrl . 'TryGhost/Casper/stargazers' . $tokenUrlFragment);
+		$userJson = json_decode($userResponse->body);
+
+		return $userJson;
 	}
 
 }
