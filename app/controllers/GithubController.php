@@ -59,25 +59,25 @@ class GithubController extends BaseController {
 		foreach($users as $user)
 		{
 			// Uses Requests library to make http request for user data
-			$user_response = Requests::get($githubUrl . $user . $tokenUrlFragment);
-			$user_json = json_decode($user_response->body);
+			$userResponse = Requests::get($githubUrl . $user . $tokenUrlFragment);
+			$userJson = json_decode($userResponse->body);
 
 			// Updates user model
-			$user_model = User::createIfDoesNotExist(
-				$user_json->login,
+			$userModel = User::createIfDoesNotExist(
+				$userJson->login,
 				[
-					'url' => $user_json->html_url
+					'url' => $userJson->html_url
 				]
 			);
 
 			// Uses Requests library to make http request for user's starred data
-			$stars_response = Requests::get($githubUrl . $user . '/starred' . $tokenUrlFragment);
-			$stars_json = json_decode($stars_response->body);
+			$starsResponse = Requests::get($githubUrl . $user . '/starred' . $tokenUrlFragment);
+			$starJson = json_decode($starsResponse->body);
 
-			foreach($stars_json as $star)
+			foreach($starJson as $star)
 			{
 				// Updates repo model
-				$repo_model = Repo::createIfDoesNotExist(
+				$repoModel = Repo::createIfDoesNotExist(
 					$star->name,
 					[
 						'language' => $star->language,
@@ -86,10 +86,10 @@ class GithubController extends BaseController {
 				);
 
 				// Updates star model
-				$star_model = Star::createIfDoesNotExist(
+				$starModel = Star::createIfDoesNotExist(
 					[
-						'user_id' => $user_model->id,
-						'repo_id' => $repo_model->id
+						'user_id' => $userModel->id,
+						'repo_id' => $repoModel->id
 					]
 				);
 			}
