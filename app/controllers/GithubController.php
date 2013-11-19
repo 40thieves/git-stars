@@ -11,6 +11,10 @@ class GithubController extends BaseController {
 	|
 	*/
 
+	/**
+	 * Github OAuth instance
+	 * @var object
+	 */
 	private $github;
 
 	public function logInWithGithub()
@@ -25,9 +29,9 @@ class GithubController extends BaseController {
 		if ( ! empty($code))
 		{
 			// Get callback token
-			$this->github->requestAccessToken($code);
+			$token = $this->github->requestAccessToken($code)->getAccessToken();
 
-			$this->foo();
+			return Redirect::to('github/update')->with('token', $token);
 		}
 		else
 		{
@@ -39,21 +43,15 @@ class GithubController extends BaseController {
 		}
 	}
 
-	public function foo()
-	{
-		if ( ! $this->github)
-		{
-			return Redirect::to('github');
-		}
-
-		$result = $this->github->request('/user');
-		print_r($result);
-	}
-
 	public function update()
 	{
+		// Gets oauth access token
+		if ( ! $token = Session::get('token'))
+			return Redirect::to('github');
+
 		// Base github url
-		$github_url = 'https://api.github.com/users/';
+		$githubUrl = 'https://api.github.com/users/';
+		$tokenUrlFragment = '?access_token=' . $token;
 
 		// List of users to index
 		$users = Config::get('recommender.users');
@@ -61,7 +59,7 @@ class GithubController extends BaseController {
 		foreach($users as $user)
 		{
 			// Uses Requests library to make http request for user data
-			$user_response = Requests::get($github_url . $user);
+			$user_response = Requests::get($githubUrl . $user . $tokenUrlFragment);
 			$user_json = json_decode($user_response->body);
 
 			// Updates user model
@@ -73,7 +71,7 @@ class GithubController extends BaseController {
 			);
 
 			// Uses Requests library to make http request for user's starred data
-			$stars_response = Requests::get($github_url . $user . '/starred');
+			$stars_response = Requests::get($githubUrl . $user . '/starred' . $tokenUrlFragment);
 			$stars_json = json_decode($stars_response->body);
 
 			foreach($stars_json as $star)
