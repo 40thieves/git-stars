@@ -53,68 +53,47 @@ class GithubController extends BaseController {
 		if ( ! $token = Session::get('token'))
 			return Redirect::to('github')->with('redirect', 'github/update');
 
-		$githubUrl = Config::get('github.urls.users'); // Base github url
-		$tokenUrlFragment = '?access_token=' . $token; // Token url fragment
+		$reposGithubUrl = Config::get('github.urls.repos');
+		$usersGithubUrl = Config::get('github.urls.users');
+		$tokenUrlFragment = '?access_token=' . $token;
 
-		// List of users to index
-		$users = Config::get('recommender.users');
+		// Sets url for users data - using sample repos Casper (117 stars) or var_dumpling (17 stars)
+		// $url = $reposGithubUrl . 'TryGhost/Casper/stargazers' . $tokenUrlFragment;
+		$url = $reposGithubUrl . 'alexnaspo/var_dumpling/stargazers' . $tokenUrlFragment;
 
-		foreach($users as $user)
+		// Fetch users
+		$users = $this->recursiveFetch($url);
+
+		// Loops through all users to fetch and star their starred data
+		foreach ($users as $user)
 		{
-			// Uses Requests library to make http request for user data
-			$userResponse = Requests::get($githubUrl . $user . $tokenUrlFragment);
-			$userJson = json_decode($userResponse->body);
-
-			// Updates user model
+			// Creates user model
 			$userModel = User::createIfDoesNotExist(
-				$userJson->login,
-				[
-					'url' => $userJson->html_url
-				]
+				$user->login,
+				['url' => $user->html_url]
 			);
 
-			// Uses Requests library to make http request for user's starred data
-			$starsResponse = Requests::get($githubUrl . $user . '/starred' . $tokenUrlFragment);
-			$starJson = json_decode($starsResponse->body);
+			// Request for user's starred data
+			$starsUrl = $usersGithubUrl . $user->login . '/starred' . $tokenUrlFragment;
+			$stars = $this->recursiveFetch($starsUrl);
 
-			foreach($starJson as $star)
+			foreach ($stars as $star)
 			{
-				// Updates repo model
+				// Creates repo model
 				$repoModel = Repo::createIfDoesNotExist(
 					$star->name,
-					[
-						'language' => $star->language,
-						'url' => $star->html_url
-					]
+					['url' => $star->html_url]
 				);
 
-				// Updates star model
-				$starModel = Star::createIfDoesNotExist(
-					[
-						'user_id' => $userModel->id,
-						'repo_id' => $repoModel->id
-					]
-				);
+				// Creates star model
+				$starModel = Star::createIfDoesNotExist([
+					'user_id' => $userModel->id,
+					'repo_id' => $repoModel->id,
+				]);
 			}
 		}
 
 		return Redirect::to('/');
-	}
-
-	public function foo()
-	{
-		// Gets oauth access token
-		if ( ! $token = Session::get('token'))
-			return Redirect::to('github')->with('redirect', 'github/foo');
-
-		$githubUrl = Config::get('github.urls.repos');
-		$tokenUrlFragment = '?access_token=' . $token;
-
-		$url = $githubUrl . 'TryGhost/Casper/stargazers' . $tokenUrlFragment;
-
-		$response = $this->recursiveFetch($url);
-
-		return $response;
 	}
 
 	private function recursiveFetch($url)
@@ -132,13 +111,16 @@ class GithubController extends BaseController {
 			// Get response headers
 			$header = $response->headers['link'];
 
-			// Decode response body
-			$json = json_decode($response->body);
+			if ($response->status_code == 200)
+			{
+				// Decode response body
+				$json = json_decode($response->body);
 
-			if ( ! is_array($json))
-				App::abort(500, 'JSON not an array');
-			// Join with previous responses
-			$ret = array_merge($ret, $json);
+				if ( ! is_array($json))
+					App::abort(500, 'JSON not an array');
+				// Join with previous responses
+				$ret = array_merge($ret, $json);
+			}
 
 			$i++;
 		// If last page link is included in header, continue to fetch next page
