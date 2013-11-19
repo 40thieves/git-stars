@@ -58,8 +58,9 @@ class GithubController extends BaseController {
 		$tokenUrlFragment = '?access_token=' . $token;
 
 		// Sets url for users data - using sample repos Casper (117 stars) or var_dumpling (17 stars)
-		// $url = $reposGithubUrl . 'TryGhost/Casper/stargazers' . $tokenUrlFragment;
-		$url = $reposGithubUrl . 'alexnaspo/var_dumpling/stargazers' . $tokenUrlFragment;
+		$baseRepo = Config::get('github.baseRepos.lowStars');
+		// $baseRepo = Config::get('github.baseRepos.highStars');
+		$url = $reposGithubUrl . $baseRepo . '/stargazers' . $tokenUrlFragment;
 
 		// Fetch users
 		$users = $this->recursiveFetch($url);
