@@ -110,10 +110,41 @@ class GithubController extends BaseController {
 		$githubUrl = Config::get('github.urls.repos');
 		$tokenUrlFragment = '?access_token=' . $token;
 
-		$userResponse = Requests::get($githubUrl . 'TryGhost/Casper/stargazers' . $tokenUrlFragment);
-		$userJson = json_decode($userResponse->body);
+		$url = $githubUrl . 'TryGhost/Casper/stargazers' . $tokenUrlFragment;
 
-		return $userJson;
+		$response = $this->recursiveFetch($url);
+
+		return $response;
+	}
+
+	private function recursiveFetch($url)
+	{
+		$ret = [];
+		$i = 1;
+		do {
+			// Add page numbers past page 1
+			if ($i > 1)
+				$url = $url . "&page=$i";
+
+			// Make request
+			$response = Requests::get($url);
+
+			// Get response headers
+			$header = $response->headers['link'];
+
+			// Decode response body
+			$json = json_decode($response->body);
+
+			if ( ! is_array($json))
+				App::abort(500, 'JSON not an array');
+			// Join with previous responses
+			$ret = array_merge($ret, $json);
+
+			$i++;
+		// If last page link is included in header, continue to fetch next page
+		} while (preg_match('/rel="last"/', $header) === 1);
+
+		return $ret;
 	}
 
 }
