@@ -28,9 +28,10 @@ class GithubController extends BaseController {
 		// If code is provided get user data and sign in
 		if ( ! empty($code))
 		{
-			// Get callback token
+			// Get access token
 			$token = $this->github->requestAccessToken($code)->getAccessToken();
 
+			// Redirect to update function, with access token
 			return Redirect::to('github/update')->with('token', $token);
 		}
 		else
@@ -49,9 +50,8 @@ class GithubController extends BaseController {
 		if ( ! $token = Session::get('token'))
 			return Redirect::to('github');
 
-		// Base github url
-		$githubUrl = Config::get('github.url');
-		$tokenUrlFragment = '?access_token=' . $token;
+		$githubUrl = Config::get('github.url'); // Base github url
+		$tokenUrlFragment = '?access_token=' . $token; // Token url fragment
 
 		// List of users to index
 		$users = Config::get('recommender.users');
@@ -94,6 +94,8 @@ class GithubController extends BaseController {
 				);
 			}
 		}
+
+		return Redirect::to('/');
 	}
 
 }
