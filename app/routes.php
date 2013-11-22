@@ -24,6 +24,6 @@ Route::get('github', 'GithubController@logInWithGithub');
 Route::get('github/update', 'GithubController@update');
 Route::get('github/foo', 'GithubController@foo');
 
-// App::error(function(Exception $exception) {
-// 	return View::make('error');
-// });
+App::error(function(Exception $exception) {
+	return View::make('error');
+});
