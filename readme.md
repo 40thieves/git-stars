@@ -26,7 +26,7 @@ Once the dataset has been created, recommendations for repos can be generated wh
 ##### Example usage
 Navigating to `/recommend/laravel` returns the following:
 
-```json
+```
 {
 	21: {
 		id: 22,
